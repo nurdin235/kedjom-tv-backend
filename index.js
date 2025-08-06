@@ -1,26 +1,34 @@
-// Load environment variables from .env file
+// Load environment variables from .env file FIRST
 require('dotenv').config();
 
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const profileRoutes = require('./src/routes/profile');
 
 const app = express();
-const PORT = process.env.PORT || 5000; // Use port from .env or default to 5000
+const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors()); // Enable CORS for all routes (important for frontend communication)
-app.use(express.json()); // Allows the app to parse JSON bodies from incoming requests
+app.use(cors());
+app.use(express.json());
 
 // Database Connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected successfully! ✨'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-// Basic Route for testing
+// Import and use routes
+const authRoutes = require('./src/routes/authRoutes');
+
+// Basic Route for testing (keep this)
 app.get('/', (req, res) => {
   res.send('Kedjom TV Backend API is running! 🚀');
 });
+
+// Use Auth Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/profile', profileRoutes);
 
 // Start the server
 app.listen(PORT, () => {
